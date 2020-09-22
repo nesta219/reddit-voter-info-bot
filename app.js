@@ -70,9 +70,10 @@ const sendReply = (subreddit, comment, replyText) => {
     }
 
     try {
-        console.log('Replying.');
+        console.log('*** REPLYING ***.');
         comment.reply(replyText);
         cooldowns[subreddit] = replyTime;
+        console.log();
     } catch(exception) {
         console.error('Error sending reply');
         console.log(exception);
