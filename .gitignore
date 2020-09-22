@@ -1,0 +1,7 @@
+.idea
+.DS_Store
+credentials.txt
+credentials.json
+credentials.sh
+notes.txt
+node_modules/
