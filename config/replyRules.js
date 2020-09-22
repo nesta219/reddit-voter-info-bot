@@ -85,18 +85,24 @@ module.exports = {
   subreddits: [
       {
           "name": "testingground4bots"
+      },
+      {
+          "name": "philadelphia"
+      },
+      {
+          "name": "pittsburgh"
       }
   ],
   rules: [
       {
           "keywords": [
-              "vote", "by", "mail"
+              "vote", "mail"
           ],
           "reply": voteByMailReply
       },
       {
           "keywords": [
-              "voting", "by", "mail"
+              "voting", "mail"
           ],
           "reply": voteByMailReply
       },

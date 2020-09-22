@@ -13,7 +13,7 @@ const credentials = {
 const client = new Snoowrap(credentials);
 
 const STARTUP_TIME = new Date().getTime() / 1000;
-const COOLDOWN_TIME = 300; //5 minute cooldown time
+const COOLDOWN_TIME = 480; //8 minute cooldown time
 const cooldowns = {};
 
 replyRules.subreddits.forEach((subreddit) => {

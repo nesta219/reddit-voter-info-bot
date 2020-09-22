@@ -19,5 +19,8 @@
   "dependencies": {
     "snoostorm": "^1.5.0",
     "snoowrap": "^1.21.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.24.1"
   }
 }

@@ -5,3 +5,4 @@ credentials.json
 credentials.sh
 notes.txt
 node_modules/
+dist/
