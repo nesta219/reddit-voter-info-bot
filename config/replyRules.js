@@ -1,6 +1,6 @@
 let botFooter = `
 
-**If you have more questions, please call the toll-free PA Voter Assistance Hotline: 1-833-PA-VOTES (1-833-728-6837)**
+**If you have more questions, please visit https://votespa.com or call the toll-free PA Voter Assistance Hotline: 1-833-PA-VOTES (1-833-728-6837)**
 
 ^^I ^^am ^^a ^^bot ^^here ^^to ^^help ^^PA ^^voters ^^get ^^the ^^info ^^they ^^need ^^for ^^the ^^2020 ^^election!
 ^^Problem?  ^^Please ^^send ^^me ^^a ^^pm
