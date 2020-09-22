@@ -94,6 +94,12 @@ module.exports = {
       },
       {
           "name": "pennsylvania"
+      },
+      {
+          "name": "pennstateuniversity"
+      },
+      {
+          "name": "pitt"
       }
   ],
   rules: [
