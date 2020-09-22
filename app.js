@@ -35,6 +35,7 @@ const processComment = (subreddit, comment) => {
     console.log('New comment');
     console.log(subreddit);
     console.log(comment.author);
+    console.log(comment.permalink);
     console.log(comment.body);
     console.log();
 
