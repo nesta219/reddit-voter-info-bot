@@ -37,7 +37,7 @@ const processComment = (subreddit, comment) => {
     console.log(comment.author);
     console.log(comment.permalink);
     console.log(comment.body);
-    console.log();
+    console.log('');
 
     for(let i = 0; i < replyRules.rules.length; i++) {
         let rule = replyRules.rules[i];
@@ -73,7 +73,7 @@ const sendReply = (subreddit, comment, replyText) => {
         console.log('*** REPLYING ***.');
         comment.reply(replyText);
         cooldowns[subreddit] = replyTime;
-        console.log();
+        console.log('');
     } catch(exception) {
         console.error('Error sending reply');
         console.log(exception);

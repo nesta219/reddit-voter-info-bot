@@ -91,7 +91,11 @@ module.exports = {
       },
       {
           "name": "pittsburgh"
-      }
+      },
+      {
+          "name": "pennsylvania"
+      },
+
   ],
   rules: [
       {
