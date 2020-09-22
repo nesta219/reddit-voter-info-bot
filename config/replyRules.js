@@ -94,8 +94,7 @@ module.exports = {
       },
       {
           "name": "pennsylvania"
-      },
-
+      }
   ],
   rules: [
       {
