@@ -100,6 +100,12 @@ module.exports = {
       },
       {
           "name": "pitt"
+      },
+      {
+          "name": "drexel"
+      },
+      {
+          "name": "temple"
       }
   ],
   rules: [
