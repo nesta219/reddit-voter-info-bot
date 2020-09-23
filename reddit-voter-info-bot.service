@@ -5,17 +5,17 @@ Description=Reddit Voter Info Bot
 Type=simple
 
 User=ubuntu
-WorkingDirectory=/home/ubuntu/reddit
+WorkingDirectory=/home/ubuntu/reddit-voter-info-bot
 KillMode=mixed
 
 # Couchbase Config
-Environment=USER_AGENT=voter-info-bot
+Environment=USER_AGENT=
 Environment=CLIENT_ID=
 Environment=CLIENT_SECRET=
-Environment=REDDIT_USERNAME=voter-info-bot
+Environment=REDDIT_USERNAME=
 Environment=REDDIT_PASSWORD=
 
-#ExecStart=/path/to/node app.js
+ExecStart=/usr/bin/npm run start
 
 [Install]
 WantedBy=multi-user.target
