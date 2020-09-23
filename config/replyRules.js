@@ -12,21 +12,14 @@ let voteByMailReply =
 The process is easy:
 
 **Step 1: Request the Ballot**
-- **Option A: Request a ballot online**
   1) Sign up for a mail ballot online at https://votespa.com/applymailballot
   2) Please note that you will be asked for a PA Driver's license or PennDOT ID to sign up online.  If you do not have this, you can also use the last 4 digits of your SSN.
-- **Option B: Request a ballot through the mail**  
-  1) Download a paper application for a mail ballot from https://votespa.com
-  2) Fill out the application and mail it to your County Board of Elections
+  3) Requests for mail ballots must be received by the County Board of Elections by **5:00pm the Tuesday before Election Day: October 27**.
   
-Requests for mail ballots must be received by the County Board of Elections by **5:00pm the Tuesday before Election Day: October 27**.
-
 **Step 2: Complete the Ballot**
-- Mark the mail ballot, following the instructions
-- Place the completed ballot in the secrecy envelope and then put the secrecy envelope into the second larger envelope with the declaration printed on it
-- Be sure to sign the declaration and use the secrecy envelope or the ballot **will not count**
-
-It cannot be emphasized enough that you **follow the instructions for the secrecy envelop**!  If you do not include it, **YOUR VOTE WILL NOT COUNT**.
+  1) Mark the mail ballot, following the instructions
+  2) Place the completed ballot in the secrecy envelope and then put the secrecy envelope into the second larger envelope with the declaration printed on it.  It cannot be emphasized enough that you **follow the instructions for the secrecy envelop**!  If you do not include it, **YOUR VOTE WILL NOT COUNT**.
+  3) Be sure to sign the declaration and use the secrecy envelope or the ballot **will not count**
 
 **Step 3: Deliver the Ballot**
 - **Option A: Return the ballot in person**
@@ -34,7 +27,7 @@ It cannot be emphasized enough that you **follow the instructions for the secrec
 
 - **Option B: Return the ballot by mail**
   1) Mail the ballot to your County Board of Elections
-  2) Ballots must be postmarked by Election Day, Tuesday November 3rd.  Don't wait around- do it as soon as you can.
+  2) Ballots must be postmarked by Election Day, Tuesday November 3rd.  Place your ballot in the mail as soon as you can.
   
 Check your ballot status by going to https://www.votespa.com/mailballotstatus 
 ` + botFooter;
