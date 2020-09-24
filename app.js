@@ -28,10 +28,6 @@ replyRules.subreddits.forEach((subreddit) => {
 
 
 const processComment = (subreddit, comment) => {
-    if(comment.created_utc < STARTUP_TIME) return;
-
-    if(comment.author.name === credentials.username && comment.subreddit.display_name !== 'testingground4bots') return;
-
     console.log('New comment');
     console.log(subreddit);
     console.log(comment.author);
@@ -66,18 +62,47 @@ const sendReply = (subreddit, comment, {reply, category}) => {
 
     let cooldownKey = `${subreddit}_${comment.link_id}_${category}`;
 
-    if(cooldowns[cooldownKey] && (replyTime - cooldowns[cooldownKey] < COOLDOWN_TIME) ) {
-        console.log(`Did not reply because of cooldown. ${replyTime - cooldowns[cooldownKey]} seconds remaining`);
-        return;
+    if(shouldReply({cooldownKey, replyTime, subreddit, comment})) {
+        try {
+            console.log('*** REPLYING ***.');
+            comment.reply(reply);
+            cooldowns[cooldownKey] = replyTime;
+            console.log('');
+        } catch(exception) {
+            console.error('Error sending reply');
+            console.log(exception);
+        }
+    }
+};
+
+
+
+const shouldReply = ({cooldownKey, replyTime, subreddit, comment}) => {
+    if(comment.author.name === 'voter-info-bot') {
+        console.log('Did not reply to comment because it was from the voter info bot');
+        return false;
     }
 
-    try {
-        console.log('*** REPLYING ***.');
-        comment.reply(reply);
-        cooldowns[cooldownKey] = replyTime;
-        console.log('');
-    } catch(exception) {
-        console.error('Error sending reply');
-        console.log(exception);
+    if(comment.created_utc < STARTUP_TIME) {
+        console.log(`Did not reply because comment was issued before bot startup time`);
+        return false;
     }
+
+    if(comment.author.name === credentials.username && comment.subreddit.display_name !== 'testingground4bots') {
+        console.log('Did not reply because the bot itself was the author of the comment');
+        return false;
+    }
+
+    if(cooldowns[cooldownKey] && (replyTime - cooldowns[cooldownKey] < COOLDOWN_TIME) ) {
+        console.log(`Did not reply because of cooldown. ${replyTime - cooldowns[cooldownKey]} seconds remaining`);
+        return false;
+    }
+
+    if(process.env.SUPRESS_REPLIES === 'true' && comment.subreddit.display_name !== 'testingground4bots') {
+        console.log(`Did not reply because SUPPRESS_REPLIES env var was set to true`);
+        return false;
+    }
+
+
+    return true;
 };

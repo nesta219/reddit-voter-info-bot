@@ -3,6 +3,7 @@
 credentials.txt
 credentials.json
 credentials.sh
+testcredentials.sh
 notes.txt
 node_modules/
 dist/

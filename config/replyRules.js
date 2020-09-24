@@ -29,6 +29,10 @@ The process is easy:
   1) Mail the ballot to your County Board of Elections
   2) Ballots must be postmarked by Election Day, Tuesday November 3rd.  Place your ballot in the mail as soon as you can.
   
+**If you do not return your voted mail-in ballot by the deadline and you want to vote in person, you have two options:**
+  1) Bring your ballot and **ALL INCLUDED ENVELOPES INCLUDING THE SECRECY ENVELOPE** to your polling place and turn it in so you can vote on your county’s voting system.
+  2) If you don’t have your ballot, you can still vote by [provisional ballot](https://www.votespa.com/Voting-in-PA/Pages/Voting-by-Provisional-Ballot.aspx) at your polling place.
+  
 Check your ballot status by going to https://www.votespa.com/mailballotstatus 
 ` + botFooter;
 
