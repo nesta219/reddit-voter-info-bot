@@ -17,8 +17,6 @@ const client = new Snoowrap(credentials);
 const BOT_STAGE = process.env.BOT_STAGE || 'dev';
 
 const STARTUP_TIME = new Date().getTime() / 1000;
-const COOLDOWN_TIME = 86400; //don't reply in the same thread in a 24 hour span
-const cooldowns = {};
 
 replyRules.subreddits.forEach((subreddit) => {
     let comments = new CommentStream(client, {
@@ -48,7 +46,7 @@ const processComment = async (subreddit, comment) => {
 
         if(foundAllKeywords) {
             let replyTime = new Date().getTime() / 1000;
-            let cooldownKey = `${comment.subreddit.display_name}_${comment.link_id}_${rule.category}`;
+            let cachekey = `${comment.subreddit.display_name}_${comment.link_id}_${rule.category}`;
 
             console.log('Found auto-reply for comment');
             console.log({
@@ -60,8 +58,8 @@ const processComment = async (subreddit, comment) => {
                 comment_id: comment.id
             });
 
-            if(await shouldReply({cooldownKey, comment, rule, replyTime})) {
-               await sendReply({cooldownKey, comment, rule, replyTime})
+            if(await shouldReply({cachekey, comment, rule, replyTime})) {
+               await sendReply({cachekey, comment, rule, replyTime})
             }
 
             break;
@@ -69,7 +67,7 @@ const processComment = async (subreddit, comment) => {
     }
 };
 
-const sendReply = async ({cooldownKey, comment, rule, replyTime}) => {
+const sendReply = async ({cachekey, comment, rule, replyTime}) => {
 
     let replied = false;
 
@@ -85,6 +83,8 @@ const sendReply = async ({cooldownKey, comment, rule, replyTime}) => {
     }
 
     if(replied) {
+        let params;
+
         try {
 
             let commentDetails = {
@@ -96,14 +96,44 @@ const sendReply = async ({cooldownKey, comment, rule, replyTime}) => {
                 comment_id: comment.id
             };
 
-            let params = {
+            params = {
                 TableName: `RedditBotConfig-${BOT_STAGE}`,
                 Item: {
                     'cachekey': {
-                        S: cooldownKey
+                        S: cachekey
                     },
                     'commentdetails': {
                         S: JSON.stringify(commentDetails)
+                    },
+                    'subreddit': {
+                        S: comment.subreddit.name
+                    },
+                    'link_title': {
+                        S: comment.link_title
+                    },
+                    'author': {
+                        S: comment.author.name
+                    },
+                    'permalink': {
+                        S: comment.permalink
+                    },
+                    'body': {
+                        S: comment.permalink
+                    },
+                    'link_id': {
+                        S: comment.link_id
+                    },
+                    'comment_id': {
+                        S: comment.comment_id
+                    },
+                    'commented_created_utc': {
+                        N: `${comment.created_utc}`
+                    },
+                    'replyTimeReddit': {
+                        N: `${replyTime}`
+                    },
+                    'replyTimeMillis': {
+                        N: `${new Date().getTime()}`
                     }
                 }
             };
@@ -116,13 +146,14 @@ const sendReply = async ({cooldownKey, comment, rule, replyTime}) => {
         } catch(exception) {
             console.error('Error writing to ddb');
             console.log(exception);
+            console.log(params);
         }
     }
 };
 
 
 
-const shouldReply = async ({cooldownKey, comment, rule, replyTime}) => {
+const shouldReply = async ({cachekey, comment, rule, replyTime}) => {
     if(comment.author.name === 'voter-info-bot') {
         console.log('Did not reply to comment because it was from the voter info bot');
         return false;
@@ -135,11 +166,6 @@ const shouldReply = async ({cooldownKey, comment, rule, replyTime}) => {
 
     if(comment.author.name === credentials.username && comment.subreddit.display_name !== 'testingground4bots') {
         console.log('Did not reply because the bot itself was the author of the comment');
-        return false;
-    }
-
-    if(cooldowns[cooldownKey] && (replyTime - cooldowns[cooldownKey] < COOLDOWN_TIME) ) {
-        console.log(`Did not reply because of cooldown. ${replyTime - cooldowns[cooldownKey]} seconds remaining`);
         return false;
     }
 
@@ -158,7 +184,7 @@ const shouldReply = async ({cooldownKey, comment, rule, replyTime}) => {
         let ddbParams = {
             TableName: `RedditBotConfig-${BOT_STAGE}`,
             Key: {
-                'cachekey': {S: cooldownKey}
+                'cachekey': {S: cachekey}
             }
         };
 
