@@ -91,27 +91,27 @@ module.exports = {
       {
           "name": "testingground4bots"
       },
-      // {
-      //     "name": "philadelphia"
-      // },
-      // {
-      //     "name": "pittsburgh"
-      // },
-      // {
-      //     "name": "pennsylvania"
-      // },
-      // {
-      //     "name": "pennstateuniversity"
-      // },
-      // {
-      //     "name": "pitt"
-      // },
-      // {
-      //     "name": "drexel"
-      // },
-      // {
-      //     "name": "temple"
-      // }
+      {
+          "name": "philadelphia"
+      },
+      {
+          "name": "pittsburgh"
+      },
+      {
+          "name": "pennsylvania"
+      },
+      {
+          "name": "pennstateuniversity"
+      },
+      {
+          "name": "pitt"
+      },
+      {
+          "name": "drexel"
+      },
+      {
+          "name": "temple"
+      }
   ],
   rules: [
       {
