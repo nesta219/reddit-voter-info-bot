@@ -45,7 +45,7 @@ const processComment = async (subreddit, comment) => {
         }
 
         if(foundAllKeywords) {
-            let replyTime = new Date().getTime() / 1000;
+            let replyTime = Math.trunc(new Date().getTime() / 1000);
             let cachekey = `${comment.subreddit.display_name}_${comment.link_id}_${rule.category}`;
 
             console.log('Found auto-reply for comment');
