@@ -13,7 +13,7 @@ const credentials = {
 const client = new Snoowrap(credentials);
 
 const STARTUP_TIME = new Date().getTime() / 1000;
-const COOLDOWN_TIME = 600; //10 minute cooldown time
+const COOLDOWN_TIME = 86400;
 const cooldowns = {};
 
 replyRules.subreddits.forEach((subreddit) => {
@@ -35,7 +35,7 @@ const processComment = (subreddit, comment) => {
     console.log('New comment');
     console.log(subreddit);
     console.log(comment.author);
-    console.log(comment.permalink);
+    console.log(comment.link_permalink);
     console.log(comment.body);
     console.log('');
 
@@ -64,18 +64,24 @@ const processComment = (subreddit, comment) => {
 const sendReply = (subreddit, comment, replyText) => {
     let replyTime = new Date().getTime() / 1000;
 
-    if(cooldowns[subreddit] && (replyTime - cooldowns[subreddit] < COOLDOWN_TIME) ) {
-        console.log(`Did not reply because of cooldown. ${replyTime - cooldowns[subreddit]} seconds remaining`);
+    let cooldownKey = cacheKey({subreddit, comment});
+
+    if(cooldowns[cooldownKey] && (replyTime - cooldowns[cooldownKey] < COOLDOWN_TIME) ) {
+        console.log(`Did not reply because of cooldown. ${replyTime - cooldowns[cooldownKey]} seconds remaining`);
         return;
     }
 
     try {
         console.log('*** REPLYING ***.');
         comment.reply(replyText);
-        cooldowns[subreddit] = replyTime;
+        cooldowns[cooldownKey] = replyTime;
         console.log('');
     } catch(exception) {
         console.error('Error sending reply');
         console.log(exception);
     }
+};
+
+const cacheKey = ({subreddit, comment}) => {
+    return `${subreddit}_${comment.link_id}`;
 };
