@@ -106,7 +106,7 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
                         S: JSON.stringify(commentDetails)
                     },
                     'subreddit': {
-                        S: comment.subreddit.name
+                        S: comment.subreddit.display_name
                     },
                     'link_title': {
                         S: comment.link_title
