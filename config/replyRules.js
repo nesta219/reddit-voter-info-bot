@@ -74,6 +74,12 @@ A [https://www.votespa.com/Voting-in-PA/Pages/Voting-by-Provisional-Ballot.aspx]
 after the election.
 ` + botFooter;
 
+
+let ballotStatus =
+`**What is my PA vote-by-mail ballot status?**
+"Pending" status in the PA online ballot tracker (https://www.votespa.com/mailballotstatus) means that your application has been received and processed but the completed ballot hasn't yet been processed.  If the application has not been received and processed, the system will return no information for the voter. Once received and processed, the status of the mail-in ballot will be "pending".  When the ballot has been mailed out (or once the county creates a mailing label), the system will show that date.  It will also be updated once your ballot is received.
+` + botFooter;
+
 module.exports = {
   subreddits: [
       {
@@ -103,58 +109,81 @@ module.exports = {
   ],
   rules: [
       {
+          "category": "vbm_standard",
           "keywords": [
               "vote", "mail"
           ],
           "reply": voteByMailReply
       },
       {
+          "category": "vbm_standard",
           "keywords": [
               "voting", "mail"
           ],
           "reply": voteByMailReply
       },
       {
+          "category": "vbm_standard",
           "keywords": [
               "mail", "ballot"
           ],
           "reply": voteByMailReply
       },
       {
+          "category": "vbm_standard",
           "keywords": [
               "absentee", "ballot"
           ],
           "reply": voteByMailReply
       },
       {
+          "category": "early_standard",
           "keywords": [
               "early", "voting"
           ],
           "reply": earlyVotingReply
       },
       {
+          "category": "early_standard",
           "keywords": [
               "early", "vote"
           ],
           "reply": earlyVotingReply
       },
       {
+          "category": "early_standard",
           "keywords": [
               "early", "voting", "in", "person"
           ],
           "reply": earlyVotingReply
       },
       {
+          "category": "early_standard",
           "keywords": [
               "early", "vote", "in", "person"
           ],
           "reply": earlyVotingReply
       },
       {
+          "category": "early_standard",
           "keywords": [
               "provisional", "ballot"
           ],
           "reply": provisionalBallotReply
+      },
+      {
+          "category": "status",
+          "keywords": [
+              "mail", "ballot", "pending"
+          ],
+          "reply": ballotStatus
+      },
+      {
+          "category": "status",
+          "keywords": [
+              "mail", "ballot", "status"
+          ],
+          "reply": ballotStatus
       }
   ]
 };

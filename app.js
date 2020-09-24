@@ -55,16 +55,16 @@ const processComment = (subreddit, comment) => {
 
         if(foundAllKeywords) {
             console.log('Found auto-reply for comment');
-            sendReply(subreddit, comment, rule.reply);
+            sendReply(subreddit, comment, rule);
             break;
         }
     }
 };
 
-const sendReply = (subreddit, comment, replyText) => {
+const sendReply = (subreddit, comment, {reply, category}) => {
     let replyTime = new Date().getTime() / 1000;
 
-    let cooldownKey = cacheKey({subreddit, comment});
+    let cooldownKey = `${subreddit}_${comment.link_id}_${category}`;
 
     if(cooldowns[cooldownKey] && (replyTime - cooldowns[cooldownKey] < COOLDOWN_TIME) ) {
         console.log(`Did not reply because of cooldown. ${replyTime - cooldowns[cooldownKey]} seconds remaining`);
@@ -73,15 +73,11 @@ const sendReply = (subreddit, comment, replyText) => {
 
     try {
         console.log('*** REPLYING ***.');
-        comment.reply(replyText);
+        comment.reply(reply);
         cooldowns[cooldownKey] = replyTime;
         console.log('');
     } catch(exception) {
         console.error('Error sending reply');
         console.log(exception);
     }
-};
-
-const cacheKey = ({subreddit, comment}) => {
-    return `${subreddit}_${comment.link_id}`;
 };
