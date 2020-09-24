@@ -34,6 +34,8 @@ The process is easy:
   2) If you don’t have your ballot, you can still vote by [provisional ballot](https://www.votespa.com/Voting-in-PA/Pages/Voting-by-Provisional-Ballot.aspx) at your polling place.
   
 Check your ballot status by going to https://www.votespa.com/mailballotstatus 
+
+If you'd like to see a video of the whole process, check it out on [YouTube](https://www.youtube.com/watch?v=vjEmDYn6bb8)
 ` + botFooter;
 
 let earlyVotingReply =
