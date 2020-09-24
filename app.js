@@ -13,7 +13,7 @@ const credentials = {
 const client = new Snoowrap(credentials);
 
 const STARTUP_TIME = new Date().getTime() / 1000;
-const COOLDOWN_TIME = 86400;
+const COOLDOWN_TIME = 86400; //don't reply in the same thread in a 24 hour span
 const cooldowns = {};
 
 replyRules.subreddits.forEach((subreddit) => {
