@@ -118,7 +118,7 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
                         S: comment.permalink
                     },
                     'body': {
-                        S: comment.permalink
+                        S: comment.body
                     },
                     'link_id': {
                         S: comment.link_id
@@ -137,6 +137,8 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
                     }
                 }
             };
+
+            console.log(params);
 
             let results = await ddb.putItem(params).promise();
 
