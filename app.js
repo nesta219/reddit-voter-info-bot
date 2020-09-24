@@ -55,7 +55,8 @@ const processComment = async (subreddit, comment) => {
                 replyTime,
                 category: rule.category,
                 link_id: comment.link_id,
-                comment_id: comment.id
+                comment_id: comment.id,
+                body: comment.body
             });
 
             if(await shouldReply({cachekey, comment, rule, replyTime})) {
@@ -102,8 +103,8 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
                     'cachekey': {
                         S: cachekey
                     },
-                    'commentdetails': {
-                        S: JSON.stringify(commentDetails)
+                    'replyTimeMillis': {
+                        N: `${new Date().getTime()}`
                     },
                     'subreddit': {
                         S: comment.subreddit.display_name
@@ -131,9 +132,6 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
                     },
                     'replyTimeReddit': {
                         N: `${replyTime}`
-                    },
-                    'replyTimeMillis': {
-                        N: `${new Date().getTime()}`
                     }
                 }
             };
