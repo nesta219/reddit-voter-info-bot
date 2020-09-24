@@ -1,3 +1,5 @@
+const AWS = require('aws-sdk');
+const ddb = new AWS.DynamoDB({region: 'us-east-1', apiVersion: '2012-08-10'});
 const Snoowrap = require('snoowrap');
 const { CommentStream } = require('snoostorm');
 const replyRules = require('./config/replyRules.js');
@@ -11,6 +13,8 @@ const credentials = {
 };
 
 const client = new Snoowrap(credentials);
+
+const BOT_STAGE = process.env.BOT_STAGE || 'dev';
 
 const STARTUP_TIME = new Date().getTime() / 1000;
 const COOLDOWN_TIME = 86400; //don't reply in the same thread in a 24 hour span
@@ -27,14 +31,7 @@ replyRules.subreddits.forEach((subreddit) => {
 });
 
 
-const processComment = (subreddit, comment) => {
-    console.log('New comment');
-    console.log(subreddit);
-    console.log(comment.author);
-    console.log(comment.permalink);
-    console.log(comment.body);
-    console.log('');
-
+const processComment = async (subreddit, comment) => {
     for(let i = 0; i < replyRules.rules.length; i++) {
         let rule = replyRules.rules[i];
 
@@ -50,26 +47,74 @@ const processComment = (subreddit, comment) => {
         }
 
         if(foundAllKeywords) {
+            let replyTime = new Date().getTime() / 1000;
+            let cooldownKey = `${comment.subreddit.display_name}_${comment.link_id}_${rule.category}`;
+
             console.log('Found auto-reply for comment');
-            sendReply(subreddit, comment, rule);
+            console.log({
+                author: comment.author.name,
+                permalink: comment.permalink,
+                replyTime,
+                category: rule.category,
+                link_id: comment.link_id,
+                comment_id: comment.id
+            });
+
+            if(await shouldReply({cooldownKey, comment, rule, replyTime})) {
+               await sendReply({cooldownKey, comment, rule, replyTime})
+            }
+
             break;
         }
     }
 };
 
-const sendReply = (subreddit, comment, {reply, category}) => {
-    let replyTime = new Date().getTime() / 1000;
+const sendReply = async ({cooldownKey, comment, rule, replyTime}) => {
 
-    let cooldownKey = `${subreddit}_${comment.link_id}_${category}`;
+    let replied = false;
 
-    if(shouldReply({cooldownKey, replyTime, subreddit, comment})) {
+    try {
+        console.log('*** REPLYING ***.');
+        comment.reply(rule.reply);
+        replied = true;
+
+
+    } catch(exception) {
+        console.error('Error sending reply');
+        console.log(exception);
+    }
+
+    if(replied) {
         try {
-            console.log('*** REPLYING ***.');
-            comment.reply(reply);
-            cooldowns[cooldownKey] = replyTime;
-            console.log('');
+
+            let commentDetails = {
+                author: comment.author.name,
+                permalink: comment.permalink,
+                replyTime,
+                category: rule.category,
+                link_id: comment.link_id,
+                comment_id: comment.id
+            };
+
+            let params = {
+                TableName: `RedditBotConfig-${BOT_STAGE}`,
+                Item: {
+                    'cachekey': {
+                        S: cooldownKey
+                    },
+                    'commentdetails': {
+                        S: JSON.stringify(commentDetails)
+                    }
+                }
+            };
+
+            let results = await ddb.putItem(params).promise();
+
+            console.log('Wrote details to ddb');
+            console.log(results);
+
         } catch(exception) {
-            console.error('Error sending reply');
+            console.error('Error writing to ddb');
             console.log(exception);
         }
     }
@@ -77,7 +122,7 @@ const sendReply = (subreddit, comment, {reply, category}) => {
 
 
 
-const shouldReply = ({cooldownKey, replyTime, subreddit, comment}) => {
+const shouldReply = async ({cooldownKey, comment, rule, replyTime}) => {
     if(comment.author.name === 'voter-info-bot') {
         console.log('Did not reply to comment because it was from the voter info bot');
         return false;
@@ -103,6 +148,34 @@ const shouldReply = ({cooldownKey, replyTime, subreddit, comment}) => {
         return false;
     }
 
+    //check for top level comment
+    if(comment.parent_id !== comment.link_id) {
+        console.log(`Did not reply because link was not a top level comment`);
+        return false;
+    }
+
+    try {
+        let ddbParams = {
+            TableName: `RedditBotConfig-${BOT_STAGE}`,
+            Key: {
+                'cachekey': {S: cooldownKey}
+            }
+        };
+
+        let results = await ddb.getItem(ddbParams).promise();
+
+        console.log(`ddb results`);
+        console.log(results);
+
+        if(typeof results.Item !== 'undefined') {
+            console.log(`Did not reply because we already replied in this thread for the rule of ${rule.category}`);
+            return false;
+        }
+
+    } catch (ddbException) {
+        console.error(ddbException);
+        return false;
+    }
 
     return true;
 };

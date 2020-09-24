@@ -1,5 +1,6 @@
 .idea
 .DS_Store
+.serverless
 credentials.txt
 credentials.json
 credentials.sh
@@ -7,5 +8,6 @@ testcredentials.sh
 notes.txt
 node_modules/
 dist/
+test/
 deploy.sh
 logtail.sh

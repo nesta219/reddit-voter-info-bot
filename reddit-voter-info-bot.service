@@ -14,6 +14,7 @@ Environment=CLIENT_ID=
 Environment=CLIENT_SECRET=
 Environment=REDDIT_USERNAME=
 Environment=REDDIT_PASSWORD=
+Environment=BOT_STAGE=production
 
 ExecStart=/usr/bin/npm run start
 

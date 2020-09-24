@@ -1,0 +1,25 @@
+service: reddit-bot-caching
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: ${opt:stage, 'production'}
+  region:  us-east-1
+  deploymentBucket:
+    name: reddit-voter-info-bot
+
+resources:
+  Resources:
+    RedditBotConfig:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: RedditBotConfig-${self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: cachekey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: cachekey
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
