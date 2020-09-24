@@ -107,7 +107,7 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
                         S: comment.link_id
                     },
                     'comment_id': {
-                        S: comment.comment_id
+                        S: comment.id
                     },
                     'commented_created_utc': {
                         N: `${comment.created_utc}`
