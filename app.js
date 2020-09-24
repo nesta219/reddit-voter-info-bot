@@ -49,15 +49,6 @@ const processComment = async (subreddit, comment) => {
             let cachekey = `${comment.subreddit.display_name}_${comment.link_id}_${rule.category}`;
 
             console.log('Found auto-reply for comment');
-            console.log({
-                author: comment.author.name,
-                permalink: comment.permalink,
-                replyTime,
-                category: rule.category,
-                link_id: comment.link_id,
-                comment_id: comment.id,
-                body: comment.body
-            });
 
             if(await shouldReply({cachekey, comment, rule, replyTime})) {
                await sendReply({cachekey, comment, rule, replyTime})
@@ -88,15 +79,6 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
 
         try {
 
-            let commentDetails = {
-                author: comment.author.name,
-                permalink: comment.permalink,
-                replyTime,
-                category: rule.category,
-                link_id: comment.link_id,
-                comment_id: comment.id
-            };
-
             params = {
                 TableName: `RedditBotConfig-${BOT_STAGE}`,
                 Item: {
@@ -104,7 +86,7 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
                         S: cachekey
                     },
                     'replyTimeMillis': {
-                        N: `${new Date().getTime()}`
+                        N: `${comment.created_utc}`
                     },
                     'subreddit': {
                         S: comment.subreddit.display_name
@@ -129,9 +111,6 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
                     },
                     'commented_created_utc': {
                         N: `${comment.created_utc}`
-                    },
-                    'replyTimeReddit': {
-                        N: `${replyTime}`
                     }
                 }
             };
@@ -153,7 +132,7 @@ const sendReply = async ({cachekey, comment, rule, replyTime}) => {
 
 
 
-const shouldReply = async ({cachekey, comment, rule, replyTime}) => {
+const shouldReply = async ({cachekey, comment, rule}) => {
     if(comment.author.name === 'voter-info-bot') {
         console.log('Did not reply to comment because it was from the voter info bot');
         return false;
@@ -184,7 +163,8 @@ const shouldReply = async ({cachekey, comment, rule, replyTime}) => {
         let ddbParams = {
             TableName: `RedditBotConfig-${BOT_STAGE}`,
             Key: {
-                'cachekey': {S: cachekey}
+                'cachekey': {S: cachekey},
+                'replyTimeMillis': {N: `${comment.created_utc}`}
             }
         };
 
