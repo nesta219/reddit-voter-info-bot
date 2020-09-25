@@ -45,13 +45,11 @@ const processComment = async (subreddit, comment) => {
         }
 
         if(foundAllKeywords) {
-            let replyTime = Math.trunc(new Date().getTime() / 1000);
-            let cachekey = `${comment.subreddit.display_name}_${comment.link_id}_${rule.category}`;
+            let cachekey = `${comment.subreddit.display_name}-${comment.link_id}-${rule.category}-${comment.id}`;
 
-            console.log('Found auto-reply for comment');
-
-            if(await shouldReply({cachekey, comment, rule, replyTime})) {
-               await sendReply({cachekey, comment, rule, replyTime})
+            if(await shouldSaveComment({cachekey, comment})) {
+                console.log('Found relevant comment');
+                await savecomment({cachekey, comment})
             }
 
             break;
@@ -59,127 +57,80 @@ const processComment = async (subreddit, comment) => {
     }
 };
 
-const sendReply = async ({cachekey, comment, rule, replyTime}) => {
+const savecomment = async ({cachekey, comment}) => {
 
-    let replied = false;
+
+    let params;
 
     try {
-        console.log('*** REPLYING ***.');
-        comment.reply(rule.reply);
-        replied = true;
 
+        params = {
+            TableName: `RedditBotConfig-${BOT_STAGE}`,
+            Item: {
+                'cachekey': {
+                    S: cachekey
+                },
+                'id': {
+                    S: comment.id
+                },
+                'replyTimeMillis': {
+                    N: `${comment.created_utc}`
+                },
+                'subreddit': {
+                    S: comment.subreddit.display_name
+                },
+                'link_title': {
+                    S: comment.link_title
+                },
+                'author': {
+                    S: comment.author.name
+                },
+                'permalink': {
+                    S: comment.permalink
+                },
+                'body': {
+                    S: comment.body
+                },
+                'link_id': {
+                    S: comment.link_id
+                },
+                'commented_created_utc': {
+                    N: `${comment.created_utc}`
+                }
+            }
+        };
+
+        console.log(params);
+
+        let results = await ddb.putItem(params).promise();
+
+        console.log('Wrote details to ddb');
+        console.log(results);
 
     } catch(exception) {
-        console.error('Error sending reply');
+        console.error('Error writing to ddb');
         console.log(exception);
+        console.log(params);
     }
-
-    if(replied) {
-        let params;
-
-        try {
-
-            params = {
-                TableName: `RedditBotConfig-${BOT_STAGE}`,
-                Item: {
-                    'cachekey': {
-                        S: cachekey
-                    },
-                    'replyTimeMillis': {
-                        N: `${comment.created_utc}`
-                    },
-                    'subreddit': {
-                        S: comment.subreddit.display_name
-                    },
-                    'link_title': {
-                        S: comment.link_title
-                    },
-                    'author': {
-                        S: comment.author.name
-                    },
-                    'permalink': {
-                        S: comment.permalink
-                    },
-                    'body': {
-                        S: comment.body
-                    },
-                    'link_id': {
-                        S: comment.link_id
-                    },
-                    'comment_id': {
-                        S: comment.id
-                    },
-                    'commented_created_utc': {
-                        N: `${comment.created_utc}`
-                    }
-                }
-            };
-
-            console.log(params);
-
-            let results = await ddb.putItem(params).promise();
-
-            console.log('Wrote details to ddb');
-            console.log(results);
-
-        } catch(exception) {
-            console.error('Error writing to ddb');
-            console.log(exception);
-            console.log(params);
-        }
-    }
+    
 };
 
 
 
-const shouldReply = async ({cachekey, comment, rule}) => {
+const shouldSaveComment = async ({cachekey, comment}) => {
     if(comment.author.name === 'voter-info-bot') {
-        console.log('Did not reply to comment because it was from the voter info bot');
         return false;
     }
 
     if(comment.created_utc < STARTUP_TIME) {
-        console.log(`Did not reply because comment was issued before bot startup time`);
         return false;
     }
 
     if(comment.author.name === credentials.username && comment.subreddit.display_name !== 'testingground4bots') {
-        console.log('Did not reply because the bot itself was the author of the comment');
         return false;
     }
 
     if(process.env.SUPRESS_REPLIES === 'true' && comment.subreddit.display_name !== 'testingground4bots') {
-        console.log(`Did not reply because SUPPRESS_REPLIES env var was set to true`);
-        return false;
-    }
-
-    //check for top level comment
-    if(comment.parent_id !== comment.link_id) {
-        console.log(`Did not reply because link was not a top level comment`);
-        return false;
-    }
-
-    try {
-        let ddbParams = {
-            TableName: `RedditBotConfig-${BOT_STAGE}`,
-            Key: {
-                'cachekey': {S: cachekey},
-                'replyTimeMillis': {N: `${comment.created_utc}`}
-            }
-        };
-
-        let results = await ddb.getItem(ddbParams).promise();
-
-        console.log(`ddb results`);
-        console.log(results);
-
-        if(typeof results.Item !== 'undefined') {
-            console.log(`Did not reply because we already replied in this thread for the rule of ${rule.category}`);
-            return false;
-        }
-
-    } catch (ddbException) {
-        console.error(ddbException);
         return false;
     }
 
