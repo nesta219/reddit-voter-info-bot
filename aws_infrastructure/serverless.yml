@@ -17,12 +17,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: cachekey
             AttributeType: S
-          - AttributeName: replyTimeMillis
+          - AttributeName: created_utc
             AttributeType: N
         KeySchema:
           - AttributeName: cachekey
             KeyType: HASH
-          - AttributeName: replyTimeMillis
+          - AttributeName: created_utc
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1

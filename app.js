@@ -58,8 +58,6 @@ const processComment = async (subreddit, comment) => {
 };
 
 const savecomment = async ({cachekey, comment}) => {
-
-
     let params;
 
     try {
@@ -73,7 +71,7 @@ const savecomment = async ({cachekey, comment}) => {
                 'id': {
                     S: comment.id
                 },
-                'replyTimeMillis': {
+                'created_utc': {
                     N: `${comment.created_utc}`
                 },
                 'subreddit': {
